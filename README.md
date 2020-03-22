@@ -1,0 +1,1 @@
+# EMedia-PNG-Metadata
