@@ -1,11 +1,10 @@
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
+import binascii
 
 def main():
-    print("Hello")
-    img=mpimg.imread('exampleImage.png')
-    imgplot = plt.imshow(img)
-    plt.show()
+    filename = 'ex1.png'
+    with open(filename, 'rb') as f:
+        content = f.read()
+    print(binascii.hexlify(content))
 
 
 if __name__ == "__main__":
