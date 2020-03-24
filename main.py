@@ -35,14 +35,26 @@ def decode_IHDR(ihdrChunk):
     #TODO for Maciej -> Print remaining atributes
 
 def decode_tEXt(textualChunk):
+    # Read and decode keyWord
     keyWord = []
+    decodedKeyWord = ''
 
     chunkIterator = 0
     while textualChunk.dataArray[chunkIterator] != 0:
         keyWord.append(textualChunk.dataArray[chunkIterator])
         chunkIterator += 1
-    print(bytearray(keyWord).decode('utf-8'))
+    decodedKeyWord = bytearray(keyWord).decode('utf-8')
+    print('Key Word = ' + decodedKeyWord)
 
+    #Read and decode text
+    text = []
+    decodedText = ''
+
+    while chunkIterator < len(textualChunk.dataArray):
+        text.append(textualChunk.dataArray[chunkIterator])
+        chunkIterator += 1
+    decodedText = bytearray(text).decode('latin1')
+    print('Text = ' + decodedText)
 
 def decode_chunks(chunksArray):
     chunkIterator = 0
@@ -50,7 +62,7 @@ def decode_chunks(chunksArray):
         if(chunksArray[chunkIterator].getChunkTypeText() == 'IHDR'):
             decode_IHDR(chunksArray[chunkIterator])
         
-        if(chunksArray[chunkIterator].getChunkTypeText() == 'zTXt'):
+        if(chunksArray[chunkIterator].getChunkTypeText() == 'tEXt'):
             decode_tEXt(chunksArray[chunkIterator])
         
         #TODO add if statements for other chunks then handle their decode methods
