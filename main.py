@@ -10,12 +10,92 @@ class Chunk:
 
         self.calculateNextChunkIndex(self.nextChunkIndex)
 
-        print('Chunk type ->' + bytearray(typeArray).decode('utf-8'))
+        print('Chunk type ->' + self.getChunkTypeText())
 
     # IEND chunk is the last one so we need to point out that 
     def calculateNextChunkIndex(self, nextChunkIndex):
         if(bytearray(self.typeArray).decode('utf-8') == 'IEND'):
             self.nextChunkIndex = -1    
+    
+    # Returns chunkType as String
+    def getChunkTypeText(self):
+        return bytearray(self.typeArray).decode('utf-8')
+
+def decode_IHDR(ihdrChunk):
+    width = ihdrChunk.dataArray[3] | (ihdrChunk.dataArray[2]<<8) | (ihdrChunk.dataArray[1]<<16) | (ihdrChunk.dataArray[0]<<24)
+    height = ihdrChunk.dataArray[7] | (ihdrChunk.dataArray[6]<<8) | (ihdrChunk.dataArray[5]<<16) | (ihdrChunk.dataArray[4]<<24)
+    bitDepth = ihdrChunk.dataArray[8]
+    colorType = ihdrChunk.dataArray[9]
+    compressionMethod = ihdrChunk.dataArray[10]
+    filterMethod = ihdrChunk.dataArray[11]
+    interlaceMethod = ihdrChunk.dataArray[12]
+
+    print("Width = " + str(width))
+    print("Height = " + str(height))
+    print("Bit Depth = " + str(bitDepth) + " bits per sample/palette index")
+    decode_IHDRcolorType(colorType, bitDepth)
+    print(decode_IHDRcompressionMethod(compressionMethod))
+    print(decode_IHDRfilterMethod(filterMethod))
+    print(decode_IHDRinterlaceMethod(interlaceMethod))
+
+def decode_IHDRcolorType(colorType, bitDepth):
+    allowedBitDepth = {}
+    sampleDepth = bitDepth
+
+    if(colorType == 0):
+        print("Color type = Each pixel is a grayscale sample")
+        allowedBitDepth = {1, 2, 4, 8, 16}
+    elif(colorType == 2): 
+        print("Color type = Each pixel is an R,G,B triple")
+        allowedBitDepth = {8, 16}
+    elif(colorType == 3): 
+        print("Color type = Each pixel is a palette index; a PLTE chunk must appear")
+        allowedBitDepth = {1, 2, 4, 8}
+        sampleDepth = 8
+    elif(colorType == 4): 
+        print("Color type = Each pixel is a grayscale sample, followed by an alpha sample")
+        allowedBitDepth = {8, 16}
+    elif(colorType == 6): 
+        print("Color type = Each pixel is an R,G,B triple, followed by an alpha sample")
+        allowedBitDepth = {8, 16}
+    else:
+        print("Color type = Invalid color type")    
+
+    if bitDepth in allowedBitDepth:
+        print("Bit Depth correct!")
+        print("Sample Depth = " + str(sampleDepth) + " bits")
+    else:
+        print("Bit Depth INCORRECT. May pose problems with compression.")
+
+def decode_IHDRcompressionMethod(compressionMethod):
+    switcher = {
+        0: "Compression method = Compression Method 0 (deflate/inflate)"
+    }
+    return switcher.get(compressionMethod, "Compression method = INVALID (not yet implemented)")
+
+def decode_IHDRfilterMethod(filterMethod):
+    switcher = {
+        0: "Filter method = Filter Method 0 (adaptive filtering with five basic filter types)"
+    }
+    return switcher.get(filterMethod, "Filter method = INVALID (not yet implemented)")
+
+def decode_IHDRinterlaceMethod(interlaceMethod):
+    switcher = {
+        0: "Interlace method = No interlace",
+        1: "Interlace method = Adam7 interlace"
+    }
+    return switcher.get(interlaceMethod, "Interlace method = INVALID")
+
+
+def decode_chunks(chunksArray):
+    chunkIterator = 0
+    while chunkIterator < len(chunksArray):
+        if(chunksArray[chunkIterator].getChunkTypeText() == 'IHDR'):
+            decode_IHDR(chunksArray[chunkIterator])
+        
+        #TODO add if statements for other chunks then handle their decode methods
+        
+        chunkIterator += 1
 
 def read_chunk(bArray, startIndex):
     chunkIterator = startIndex
@@ -72,7 +152,7 @@ def check_sygnature(bArray):
 
 
 def main():
-    filename = 'ex1.png'
+    filename = 'ex1_color.png'
     fileChunks = []
 
     # Open and read file into byte array
@@ -87,6 +167,9 @@ def main():
     while chunkIndex != (-1):
         fileChunks.append(read_chunk(byteArray, chunkIndex))
         chunkIndex = fileChunks[-1].nextChunkIndex
+
+    #decode_IHDR(fileChunks[0])
+    decode_chunks(fileChunks)
 
 if __name__ == "__main__":
     main()
