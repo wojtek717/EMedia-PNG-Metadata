@@ -17,6 +17,11 @@ class Chunk:
         if(bytearray(self.typeArray).decode('utf-8') == 'IEND'):
             self.nextChunkIndex = -1    
 
+def decode_IHDR(ihdrChunk):
+    width = ihdrChunk.dataArray[3] | (ihdrChunk.dataArray[2]<<8) | (ihdrChunk.dataArray[1]<<16) | (ihdrChunk.dataArray[0]<<24)
+    height = ihdrChunk.dataArray[7] | (ihdrChunk.dataArray[6]<<8) | (ihdrChunk.dataArray[5]<<16) | (ihdrChunk.dataArray[4]<<24)
+    
+
 def read_chunk(bArray, startIndex):
     chunkIterator = startIndex
     lengthArray = []
@@ -87,6 +92,8 @@ def main():
     while chunkIndex != (-1):
         fileChunks.append(read_chunk(byteArray, chunkIndex))
         chunkIndex = fileChunks[-1].nextChunkIndex
+
+    decode_IHDR(fileChunks[0])
 
 if __name__ == "__main__":
     main()
