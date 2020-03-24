@@ -34,11 +34,24 @@ def decode_IHDR(ihdrChunk):
     print("Height = " + str(height))
     #TODO for Maciej -> Print remaining atributes
 
+def decode_tEXt(textualChunk):
+    keyWord = []
+
+    chunkIterator = 0
+    while textualChunk.dataArray[chunkIterator] != 0:
+        keyWord.append(textualChunk.dataArray[chunkIterator])
+        chunkIterator += 1
+    print(bytearray(keyWord).decode('utf-8'))
+
+
 def decode_chunks(chunksArray):
     chunkIterator = 0
     while chunkIterator < len(chunksArray):
         if(chunksArray[chunkIterator].getChunkTypeText() == 'IHDR'):
             decode_IHDR(chunksArray[chunkIterator])
+        
+        if(chunksArray[chunkIterator].getChunkTypeText() == 'zTXt'):
+            decode_tEXt(chunksArray[chunkIterator])
         
         #TODO add if statements for other chunks then handle their decode methods
         
@@ -99,7 +112,7 @@ def check_sygnature(bArray):
 
 
 def main():
-    filename = 'ex1.png'
+    filename = 'ex1_color.png'
     fileChunks = []
 
     # Open and read file into byte array
