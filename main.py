@@ -10,17 +10,39 @@ class Chunk:
 
         self.calculateNextChunkIndex(self.nextChunkIndex)
 
-        print('Chunk type ->' + bytearray(typeArray).decode('utf-8'))
+        print('Chunk type ->' + self.getChunkTypeText())
 
     # IEND chunk is the last one so we need to point out that 
     def calculateNextChunkIndex(self, nextChunkIndex):
         if(bytearray(self.typeArray).decode('utf-8') == 'IEND'):
             self.nextChunkIndex = -1    
+    
+    # Returns chunkType as String
+    def getChunkTypeText(self):
+        return bytearray(self.typeArray).decode('utf-8')
 
 def decode_IHDR(ihdrChunk):
     width = ihdrChunk.dataArray[3] | (ihdrChunk.dataArray[2]<<8) | (ihdrChunk.dataArray[1]<<16) | (ihdrChunk.dataArray[0]<<24)
     height = ihdrChunk.dataArray[7] | (ihdrChunk.dataArray[6]<<8) | (ihdrChunk.dataArray[5]<<16) | (ihdrChunk.dataArray[4]<<24)
-    
+    bitDepth = ihdrChunk.dataArray[8]
+    colorType = ihdrChunk.dataArray[9]
+    compressionMethon = ihdrChunk.dataArray[10]
+    filterMethod = ihdrChunk.dataArray[11]
+    interlaceMethod = ihdrChunk.dataArray[12]
+
+    print("Width = " + str(width))
+    print("Height = " + str(height))
+    #TODO for Maciej -> Print remaining atributes
+
+def decode_chunks(chunksArray):
+    chunkIterator = 0
+    while chunkIterator < len(chunksArray):
+        if(chunksArray[chunkIterator].getChunkTypeText() == 'IHDR'):
+            decode_IHDR(chunksArray[chunkIterator])
+        
+        #TODO add if statements for other chunks then handle their decode methods
+        
+        chunkIterator += 1
 
 def read_chunk(bArray, startIndex):
     chunkIterator = startIndex
@@ -93,7 +115,8 @@ def main():
         fileChunks.append(read_chunk(byteArray, chunkIndex))
         chunkIndex = fileChunks[-1].nextChunkIndex
 
-    decode_IHDR(fileChunks[0])
+    #decode_IHDR(fileChunks[0])
+    decode_chunks(fileChunks)
 
 if __name__ == "__main__":
     main()
