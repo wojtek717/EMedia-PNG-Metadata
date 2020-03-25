@@ -14,7 +14,9 @@ def decode_chunks(chunksArray):
 
         if(chunksArray[chunkIterator].getChunkTypeText() == 'iTXt'):
             decode_iTXt(chunksArray[chunkIterator])
-        
+
+        if(chunksArray[chunkIterator].getChunkTypeText() == 'PLTE'):
+            decode_PLTE(chunksArray[chunkIterator])
         #TODO add if statements for other chunks then handle their decode methods
         
         chunkIterator += 1
@@ -84,6 +86,22 @@ def decode_IHDRinterlaceMethod(interlaceMethod):
         1: "Interlace method = Adam7 interlace"
     }
     return switcher.get(interlaceMethod, "Interlace method = INVALID")
+
+##### PLTE Chunk #####
+
+def decode_PLTE(plteChunk):
+
+    length = int(plteChunk.getChunkLength()/3)
+    print(str(length) + " palette(s) present.")
+
+    for palette in range(length):
+        print("Palette " + str(palette+1) + ":")
+        r = plteChunk.dataArray[0+palette]
+        g = plteChunk.dataArray[1+palette]
+        b = plteChunk.dataArray[2+palette]
+        print("R: " + str(r) + " G: " + str(g) + " B: " + str(b))
+
+
 
 ##### tEXt Chunk #####
 def decode_tEXt(textualChunk):
