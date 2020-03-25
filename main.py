@@ -1,4 +1,5 @@
 import binascii
+import zlib
 
 class Chunk:
     def __init__(self, lengthArray, typeArray, dataArray, crcArray, nextChunkIndex):
@@ -56,6 +57,50 @@ def decode_tEXt(textualChunk):
     decodedText = bytearray(text).decode('latin1')
     print('Text = ' + decodedText)
 
+def decode_zTXt(textualChunk):
+    # Read and decode keyWord
+    keyWord = []
+    decodedKeyWord = ''
+
+    chunkIterator = 0
+    while textualChunk.dataArray[chunkIterator] != 0:
+        keyWord.append(textualChunk.dataArray[chunkIterator])
+        chunkIterator += 1
+    decodedKeyWord = bytearray(keyWord).decode('latin1')
+    print('Key Word = ' + decodedKeyWord)
+
+    chunkIterator += 1
+
+    # Read compress method
+    compressMethon = textualChunk.dataArray[chunkIterator]
+    chunkIterator += 1
+    print('Compress Methon = ' + str(compressMethon))
+
+    # Read compressed text from chunk
+    text = []
+    decodedText = ''
+
+    while chunkIterator < len(textualChunk.dataArray):
+        text.append(textualChunk.dataArray[chunkIterator])
+        chunkIterator += 1
+
+    # Decompress and decode text
+    decodedText = decompress_deflate(text).decode('latin1')
+    print('Text = ' + decodedText)
+
+# Function that decompress given compressed text with Deflate alghoritm
+# https://stackoverflow.com/questions/1089662/python-inflate-and-deflate-implementations
+# http://www.libpng.org/pub/png/spec/1.2/PNG-Compression.html
+def decompress_deflate(compressedText):
+    compressedByteArray = bytearray(compressedText)
+    # Ignore two first bytes
+    compressedByteArray.pop(0)
+    compressedByteArray.pop(0)
+    # Decompress and provide window size
+    byteArray = zlib.decompress(compressedByteArray, -15)
+    return byteArray
+
+
 def decode_chunks(chunksArray):
     chunkIterator = 0
     while chunkIterator < len(chunksArray):
@@ -64,6 +109,9 @@ def decode_chunks(chunksArray):
         
         if(chunksArray[chunkIterator].getChunkTypeText() == 'tEXt'):
             decode_tEXt(chunksArray[chunkIterator])
+
+        if(chunksArray[chunkIterator].getChunkTypeText() == 'zTXt'):
+            decode_zTXt(chunksArray[chunkIterator])
         
         #TODO add if statements for other chunks then handle their decode methods
         
