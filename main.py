@@ -47,6 +47,8 @@ def decode_tEXt(textualChunk):
     decodedKeyWord = bytearray(keyWord).decode('utf-8')
     print('Key Word = ' + decodedKeyWord)
 
+    chunkIterator += 1
+
     #Read and decode text
     text = []
     decodedText = ''
