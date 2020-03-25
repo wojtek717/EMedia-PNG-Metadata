@@ -3,4 +3,6 @@
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-*.code-workspace
+*.code-workspace/__pycache__
+__pycache__/
+__pycache__/Chunk.cpython-37.pyc __pycache__/chunksController.cpython-37.pyc __pycache__/chunksDecoder.cpython-37.pyc __pycache__/deflateDecompresser.cpython-37.pyc
