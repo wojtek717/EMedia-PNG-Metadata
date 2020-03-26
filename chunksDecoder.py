@@ -14,6 +14,9 @@ def decode_chunks(chunksArray):
 
         if(chunksArray[chunkIterator].getChunkTypeText() == 'iTXt'):
             decode_iTXt(chunksArray[chunkIterator])
+
+        if(chunksArray[chunkIterator].getChunkTypeText() == 'IDAT'):
+            decode_IDAT(chunksArray[chunkIterator])
         
         #TODO add if statements for other chunks then handle their decode methods
         
@@ -84,6 +87,11 @@ def decode_IHDRinterlaceMethod(interlaceMethod):
         1: "Interlace method = Adam7 interlace"
     }
     return switcher.get(interlaceMethod, "Interlace method = INVALID")
+
+##### IDAT Chunk #####
+def decode_IDAT(idatChunk):
+    print(len( deflateDecompresser.decompress_text(idatChunk.dataArray)))
+   
 
 ##### tEXt Chunk #####
 def decode_tEXt(textualChunk):
