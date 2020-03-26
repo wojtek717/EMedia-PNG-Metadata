@@ -19,9 +19,7 @@ def decode_chunks(chunksArray):
         if(chunksArray[chunkIterator].getChunkTypeText() == 'iTXt'):
             decode_iTXt(chunksArray[chunkIterator])
 
-        #Mergowac Idaty i wykonac funckje dla zmergowanych idatow (np. kiedy IEND)
         if(chunksArray[chunkIterator].getChunkTypeText() == 'IDAT'):
-            #decode_IDAT(chunksArray[chunkIterator], imageAtributes)
             mergedIdatChunkData = merge_IDATs(mergedIdatChunkData, chunksArray[chunkIterator])
 
         if(chunksArray[chunkIterator].getChunkTypeText() == 'IEND'):
@@ -105,17 +103,16 @@ def decode_IHDRinterlaceMethod(interlaceMethod):
 def merge_IDATs(mergedIdatChunkData, idatChunk):
     return(mergedIdatChunkData + idatChunk.dataArray)
 
-
 def decode_IDAT(idatChunk, imageAtributes):
-
     shouldHaveBytes = int(imageAtributes.width * imageAtributes.height * (imageAtributes.bitDepth / 8) + imageAtributes.height)
-    print(shouldHaveBytes)
     decompressedByteArray = deflateDecompresser.decompress_text(idatChunk)
-    print(len(decompressedByteArray))
 
+    if(len(decompressedByteArray) > shouldHaveBytes):
+        print("Redundant bytes: " + str(len(decompressedByteArray[shouldHaveBytes::])) + " ---> " + str(binascii.hexlify(decompressedByteArray[shouldHaveBytes::])))
+    else:
+        print("No redundant bytes in IDAT chunk")
    
 ##### PLTE Chunk #####
-
 def decode_PLTE(plteChunk):
 
     length = int(plteChunk.getChunkLength()/3)
@@ -127,8 +124,6 @@ def decode_PLTE(plteChunk):
         g = plteChunk.dataArray[1+palette]
         b = plteChunk.dataArray[2+palette]
         print("R: " + str(r) + " G: " + str(g) + " B: " + str(b))
-
-
 
 ##### tEXt Chunk #####
 def decode_tEXt(textualChunk):
