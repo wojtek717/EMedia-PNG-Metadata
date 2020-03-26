@@ -23,6 +23,10 @@ class Chunk:
     def getChunkTypeText(self):
         return bytearray(self.typeArray).decode('utf-8')
 
+    # Returns the number of bytes in data part of the chunk
+    def getChunkLength(self):
+        return len(self.dataArray)
+
 # Function that provides reading chunk from PNG file and returns chunk object
 def read_chunk(bArray, startIndex):
     chunkIterator = startIndex

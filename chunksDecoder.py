@@ -1,10 +1,12 @@
 import deflateDecompresser
+import binascii
+import imageAtributes
 
 def decode_chunks(chunksArray):
     chunkIterator = 0
     while chunkIterator < len(chunksArray):
         if(chunksArray[chunkIterator].getChunkTypeText() == 'IHDR'):
-            decode_IHDR(chunksArray[chunkIterator])
+            imageAtributes = decode_IHDR(chunksArray[chunkIterator])
         
         if(chunksArray[chunkIterator].getChunkTypeText() == 'tEXt'):
             decode_tEXt(chunksArray[chunkIterator])
@@ -16,8 +18,10 @@ def decode_chunks(chunksArray):
             decode_iTXt(chunksArray[chunkIterator])
 
         if(chunksArray[chunkIterator].getChunkTypeText() == 'IDAT'):
-            decode_IDAT(chunksArray[chunkIterator])
+            decode_IDAT(chunksArray[chunkIterator], imageAtributes)
         
+        if(chunksArray[chunkIterator].getChunkTypeText() == 'PLTE'):
+            decode_PLTE(chunksArray[chunkIterator])
         #TODO add if statements for other chunks then handle their decode methods
         
         chunkIterator += 1
@@ -39,6 +43,8 @@ def decode_IHDR(ihdrChunk):
     print(decode_IHDRcompressionMethod(compressionMethod))
     print(decode_IHDRfilterMethod(filterMethod))
     print(decode_IHDRinterlaceMethod(interlaceMethod))
+
+    return (imageAtributes.ImageAtributes(width, height, bitDepth, colorType, compressionMethod, filterMethod, interlaceMethod))
 
 def decode_IHDRcolorType(colorType, bitDepth):
     allowedBitDepth = {}
@@ -88,10 +94,33 @@ def decode_IHDRinterlaceMethod(interlaceMethod):
     }
     return switcher.get(interlaceMethod, "Interlace method = INVALID")
 
+##### TODO mergeIdatFunction()
+
+##### FIX WYKONYWAC TA FUNKCJE DLA ZMERGOWANEGO IDAT
 ##### IDAT Chunk #####
-def decode_IDAT(idatChunk):
-    print(len( deflateDecompresser.decompress_text(idatChunk.dataArray)))
+def decode_IDAT(idatChunk, imageAtributes):
+
+    shouldHaveBytes = int(imageAtributes.width * imageAtributes.height * (imageAtributes.bitDepth / 8) + imageAtributes.height)
+    print(shouldHaveBytes)
+    decompressedByteArray = deflateDecompresser.decompress_text(idatChunk.dataArray)
+    print(len(decompressedByteArray))
+
    
+##### PLTE Chunk #####
+
+def decode_PLTE(plteChunk):
+
+    length = int(plteChunk.getChunkLength()/3)
+    print(str(length) + " palette(s) present.")
+
+    for palette in range(length):
+        print("Palette " + str(palette+1) + ":")
+        r = plteChunk.dataArray[0+palette]
+        g = plteChunk.dataArray[1+palette]
+        b = plteChunk.dataArray[2+palette]
+        print("R: " + str(r) + " G: " + str(g) + " B: " + str(b))
+
+
 
 ##### tEXt Chunk #####
 def decode_tEXt(textualChunk):
