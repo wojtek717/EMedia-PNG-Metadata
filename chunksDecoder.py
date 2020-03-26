@@ -3,6 +3,8 @@ import binascii
 import imageAtributes
 
 def decode_chunks(chunksArray):
+    mergedIdatChunkData = []
+
     chunkIterator = 0
     while chunkIterator < len(chunksArray):
         if(chunksArray[chunkIterator].getChunkTypeText() == 'IHDR'):
@@ -17,8 +19,13 @@ def decode_chunks(chunksArray):
         if(chunksArray[chunkIterator].getChunkTypeText() == 'iTXt'):
             decode_iTXt(chunksArray[chunkIterator])
 
+        #Mergowac Idaty i wykonac funckje dla zmergowanych idatow (np. kiedy IEND)
         if(chunksArray[chunkIterator].getChunkTypeText() == 'IDAT'):
-            decode_IDAT(chunksArray[chunkIterator], imageAtributes)
+            #decode_IDAT(chunksArray[chunkIterator], imageAtributes)
+            mergedIdatChunkData = merge_IDATs(mergedIdatChunkData, chunksArray[chunkIterator])
+
+        if(chunksArray[chunkIterator].getChunkTypeText() == 'IEND'):
+            decode_IDAT(mergedIdatChunkData, imageAtributes)        
         
         if(chunksArray[chunkIterator].getChunkTypeText() == 'PLTE'):
             decode_PLTE(chunksArray[chunkIterator])
@@ -94,15 +101,16 @@ def decode_IHDRinterlaceMethod(interlaceMethod):
     }
     return switcher.get(interlaceMethod, "Interlace method = INVALID")
 
-##### TODO mergeIdatFunction()
-
-##### FIX WYKONYWAC TA FUNKCJE DLA ZMERGOWANEGO IDAT
 ##### IDAT Chunk #####
+def merge_IDATs(mergedIdatChunkData, idatChunk):
+    return(mergedIdatChunkData + idatChunk.dataArray)
+
+
 def decode_IDAT(idatChunk, imageAtributes):
 
     shouldHaveBytes = int(imageAtributes.width * imageAtributes.height * (imageAtributes.bitDepth / 8) + imageAtributes.height)
     print(shouldHaveBytes)
-    decompressedByteArray = deflateDecompresser.decompress_text(idatChunk.dataArray)
+    decompressedByteArray = deflateDecompresser.decompress_text(idatChunk)
     print(len(decompressedByteArray))
 
    
