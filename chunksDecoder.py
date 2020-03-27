@@ -1,10 +1,14 @@
 import deflateDecompresser
+import binascii
+import imageAtributes
 
 def decode_chunks(chunksArray):
+    mergedIdatChunkData = []
+
     chunkIterator = 0
     while chunkIterator < len(chunksArray):
         if(chunksArray[chunkIterator].getChunkTypeText() == 'IHDR'):
-            decode_IHDR(chunksArray[chunkIterator])
+            imageAtributes = decode_IHDR(chunksArray[chunkIterator])
         
         if(chunksArray[chunkIterator].getChunkTypeText() == 'tEXt'):
             decode_tEXt(chunksArray[chunkIterator])
@@ -15,6 +19,12 @@ def decode_chunks(chunksArray):
         if(chunksArray[chunkIterator].getChunkTypeText() == 'iTXt'):
             decode_iTXt(chunksArray[chunkIterator])
 
+        if(chunksArray[chunkIterator].getChunkTypeText() == 'IDAT'):
+            mergedIdatChunkData = merge_IDATs(mergedIdatChunkData, chunksArray[chunkIterator])
+
+        if(chunksArray[chunkIterator].getChunkTypeText() == 'IEND'):
+            decode_IDAT(mergedIdatChunkData, imageAtributes)        
+        
         if(chunksArray[chunkIterator].getChunkTypeText() == 'PLTE'):
             decode_PLTE(chunksArray[chunkIterator])
         #TODO add if statements for other chunks then handle their decode methods
@@ -38,6 +48,8 @@ def decode_IHDR(ihdrChunk):
     print(decode_IHDRcompressionMethod(compressionMethod))
     print(decode_IHDRfilterMethod(filterMethod))
     print(decode_IHDRinterlaceMethod(interlaceMethod))
+
+    return (imageAtributes.ImageAtributes(width, height, bitDepth, colorType, compressionMethod, filterMethod, interlaceMethod))
 
 def decode_IHDRcolorType(colorType, bitDepth):
     allowedBitDepth = {}
@@ -87,8 +99,20 @@ def decode_IHDRinterlaceMethod(interlaceMethod):
     }
     return switcher.get(interlaceMethod, "Interlace method = INVALID")
 
-##### PLTE Chunk #####
+##### IDAT Chunk #####
+def merge_IDATs(mergedIdatChunkData, idatChunk):
+    return(mergedIdatChunkData + idatChunk.dataArray)
 
+def decode_IDAT(idatChunk, imageAtributes):
+    shouldHaveBytes = int(imageAtributes.width * imageAtributes.height * (imageAtributes.bitDepth / 8) + imageAtributes.height)
+    decompressedByteArray = deflateDecompresser.decompress_text(idatChunk)
+
+    if(len(decompressedByteArray) > shouldHaveBytes):
+        print("Redundant bytes: " + str(len(decompressedByteArray[shouldHaveBytes::])) + " ---> " + str(binascii.hexlify(decompressedByteArray[shouldHaveBytes::])))
+    else:
+        print("No redundant bytes in IDAT chunk")
+   
+##### PLTE Chunk #####
 def decode_PLTE(plteChunk):
 
     length = int(plteChunk.getChunkLength()/3)
@@ -100,8 +124,6 @@ def decode_PLTE(plteChunk):
         g = plteChunk.dataArray[1+palette]
         b = plteChunk.dataArray[2+palette]
         print("R: " + str(r) + " G: " + str(g) + " B: " + str(b))
-
-
 
 ##### tEXt Chunk #####
 def decode_tEXt(textualChunk):
