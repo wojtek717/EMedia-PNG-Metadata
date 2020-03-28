@@ -13,10 +13,10 @@ def check_sygnature(bArray):
 
         sygnature_byte += 1
     print("Valid sygnature")
-    return True        
+    return True
 
 def main():
-    filename = 'images/ex1_indexed2.png'
+    filename = 'images/ex1_indexed.png'
     fileChunks = []
 
     # Open and read file into byte array

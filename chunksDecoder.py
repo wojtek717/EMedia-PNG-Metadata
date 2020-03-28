@@ -27,6 +27,9 @@ def decode_chunks(chunksArray):
         
         if(chunksArray[chunkIterator].getChunkTypeText() == 'PLTE'):
             decode_PLTE(chunksArray[chunkIterator])
+
+        if(chunksArray[chunkIterator].getChunkTypeText() == 'tIME'):
+            decode_tIME(chunksArray[chunkIterator])
         #TODO add if statements for other chunks then handle their decode methods
         
         chunkIterator += 1
@@ -229,3 +232,18 @@ def decode_iTXt(textualChunk):
     else:
         decodedText = bytearray(text).decode('utf-8')
     print('Text = ' + decodedText)
+
+##### tIME Chunk #####
+def decode_tIME(timeChunk):
+    year = timeChunk.dataArray[1] | (timeChunk.dataArray[0]<<8)
+    month = timeChunk.dataArray[2]
+    day = timeChunk.dataArray[3]
+
+    hour = timeChunk.dataArray[4]
+    minute = timeChunk.dataArray[5]
+    secod = timeChunk.dataArray[6]
+
+    date = str(day) + "/" + str(month) + "/" + str(year)
+    time = str(hour) + ":" + str(minute) + ":" + str(secod)
+
+    print("Last modification: " + date + " " + time)
