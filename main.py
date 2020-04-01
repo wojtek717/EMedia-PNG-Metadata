@@ -1,6 +1,10 @@
 import binascii
+
 import chunk as PNGChunk
 import chunksDecoder as CDecoder
+
+import fourrier as fr
+
 
 # Function that checks if PNG sygnature is valid
 def check_sygnature(bArray):
@@ -16,7 +20,8 @@ def check_sygnature(bArray):
     return True
 
 def main():
-    filename = 'images/ex1_indexed2.png'
+    filename = 'images/ex3_duzy.png'
+
     mergedIdatChunkData = []
     fileChunks = []
 
@@ -33,6 +38,10 @@ def main():
         chunkIndex = fileChunks[-1].nextChunkIndex
 
     CDecoder.decode_chunks(fileChunks, mergedIdatChunkData)
+
+    #print(str(mergedIdatChunkData))
+
+    fr.showFourrierSpectrum(filename)
 
 
 if __name__ == "__main__":
