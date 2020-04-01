@@ -2,8 +2,8 @@ import deflateDecompresser
 import binascii
 import imageAtributes
 
-def decode_chunks(chunksArray):
-    mergedIdatChunkData = []
+def decode_chunks(chunksArray, mergedIdatChunkData):
+    #mergedIdatChunkData = []
 
     chunkIterator = 0
     while chunkIterator < len(chunksArray):

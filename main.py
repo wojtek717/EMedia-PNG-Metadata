@@ -16,7 +16,8 @@ def check_sygnature(bArray):
     return True
 
 def main():
-    filename = 'images/ex1_indexed.png'
+    filename = 'images/ex1_indexed2.png'
+    mergedIdatChunkData = []
     fileChunks = []
 
     # Open and read file into byte array
@@ -31,7 +32,9 @@ def main():
         fileChunks.append(PNGChunk.read_chunk(byteArray, chunkIndex))
         chunkIndex = fileChunks[-1].nextChunkIndex
 
-    CDecoder.decode_chunks(fileChunks)
+    CDecoder.decode_chunks(fileChunks, mergedIdatChunkData)
+    print(str(mergedIdatChunkData))
+    
 
 if __name__ == "__main__":
     main()
