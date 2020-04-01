@@ -15,6 +15,6 @@ def showFourrierSpectrum(filename):
     plt.subplot(221), plt.imshow(img_c1, "gray"), plt.title("Original Image")
     plt.subplot(222), plt.imshow(np.log(1+np.abs(img_c2)), "gray"), plt.title("Spectrum")
     plt.subplot(223), plt.imshow(np.log(1+np.abs(img_c3)), "gray"), plt.title("Centered")
-    plt.subplot(224), plt.imshow(np.abs(img_c3), "gray"), plt.title("Processed Image")
+    plt.subplot(224), plt.imshow(np.abs(img_c4), "gray"), plt.title("Processed Image")
 
     plt.savefig("figures/mygraph.png")

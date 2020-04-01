@@ -1,5 +1,3 @@
-import binascii
-
 import chunk as PNGChunk
 import chunksDecoder as CDecoder
 
