@@ -33,8 +33,7 @@ def main():
         chunkIndex = fileChunks[-1].nextChunkIndex
 
     CDecoder.decode_chunks(fileChunks, mergedIdatChunkData)
-    print(str(mergedIdatChunkData))
-    
+
 
 if __name__ == "__main__":
     main()
