@@ -258,6 +258,11 @@ def decode_eXIf(exifChunk):
     header = []
     IFDsArray = []
 
+    # We need that lists to return elements by arguments in function
+    isNextIFDPasser = [True]
+    chunkIteratorPasser = [0]
+
+    # Read header
     chunkIterator = 0
     while chunkIterator < 8:
         header.append(exifChunk.dataArray[chunkIterator])
@@ -268,13 +273,17 @@ def decode_eXIf(exifChunk):
     chunkIterator += offset_to_ifd0
     print("Offset to ifdo0 = " + str(offset_to_ifd0))
 
-    IFDsArray.append(read_IFD(exifChunk, chunkIterator))
-
+    # Call that function again if offset to next IFD != 0
+    # And get correct value of chunkIterator 
+    while isNextIFDPasser[0] == True:
+        IFDsArray.append(read_IFD(exifChunk, chunkIterator, isNextIFDPasser, chunkIteratorPasser))
+        chunkIterator = chunkIteratorPasser[0]
 
     
-def read_IFD(exifChunk, chunkIterator):
+def read_IFD(exifChunk, chunkIterator, isNextIFDPasser, chunkIteratorPasser):
     ifd = []
 
+    # Read amount of DE
     ifd_number_of_directory_entries = exifChunk.dataArray[chunkIterator]
     print("ifd DE: " + str(ifd_number_of_directory_entries))
     chunkIterator += 1
@@ -286,37 +295,43 @@ def read_IFD(exifChunk, chunkIterator):
         count = []
         offset = []
 
+        # Read tagID
         tagIdIterator = 0
         while tagIdIterator < 2:
             tagId.append(exifChunk.dataArray[chunkIterator])
             chunkIterator += 1
             tagIdIterator += 1
 
+        # Read tagType
         tagTypeIterator = 0
         while tagTypeIterator < 2:
             tagType.append(exifChunk.dataArray[chunkIterator])
             chunkIterator += 1
             tagTypeIterator += 1
 
+        # Read tag's count
         countIterator = 0
         while countIterator < 4:
             count.append(exifChunk.dataArray[chunkIterator])
             chunkIterator += 1
             countIterator += 1
 
+        # Read offset to data
         offsetIterator = 0
         while offsetIterator < 4:
             offset.append(exifChunk.dataArray[chunkIterator])
             chunkIterator +=1
             offsetIterator += 1
         
+        # Save DE to IFD list
         ifd.append(directoryEntry.DirectoryEntry(tagId, tagType, count, offset))
         deIterator += 1
 
         print("*** exifDE" + str(deIterator))
         print(tagId)
         print()
-    
+
+    # Read offset to next IFD
     offset_to_next_IFDArray = []
     offsetIterator = 0
     while offsetIterator < 4:
@@ -325,10 +340,15 @@ def read_IFD(exifChunk, chunkIterator):
         offsetIterator += 1
     offset_to_next_IFD = offset_to_next_IFDArray[3] | (offset_to_next_IFDArray[2]<<8) | (offset_to_next_IFDArray[1]<<16) | (offset_to_next_IFDArray[0]<<24)
 
+    # If offset == 0 there is not more IFD in exif
     if(offset_to_next_IFD == 0):
         print("There is not more IFD")
+        isNextIFDPasser[0] = False
     else:
         chunkIterator += offset_to_next_IFD
+        isNextIFDPasser[0] = True
 
+    chunkIteratorPasser[0] = chunkIterator
+
+    # Return IFD that contain n DE
     return ifd
-
