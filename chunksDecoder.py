@@ -28,6 +28,9 @@ def decode_chunks(chunksArray):
         if(chunksArray[chunkIterator].getChunkTypeText() == 'PLTE'):
             decode_PLTE(chunksArray[chunkIterator])
 
+        if(chunksArray[chunkIterator].getChunkTypeText() == 'eXIf'):
+            decode_eXIf(chunksArray[chunkIterator])
+
         if(chunksArray[chunkIterator].getChunkTypeText() == 'tIME'):
             decode_tIME(chunksArray[chunkIterator])
         #TODO add if statements for other chunks then handle their decode methods
@@ -247,3 +250,17 @@ def decode_tIME(timeChunk):
     time = str(hour) + ":" + str(minute) + ":" + str(secod)
 
     print("Last modification: " + date + " " + time)
+
+##### eXIf Chunk #####
+def decode_eXIf(exifChunk):
+
+    header = []
+
+    chunkIterator = 0
+    while chunkIterator < 8:
+        header.append(exifChunk.dataArray[chunkIterator])
+        chunkIterator += 1
+
+    # Offset is defined in bits so devidy by 8 to get byte
+    offset_to_ifd0 = int((header[7] | (header[6]<<8) | (header[5]<<16) | (header[4]<<24)) / 8)
+    print("Offset to ifdo0 = " + str(offset_to_ifd0))
