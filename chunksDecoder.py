@@ -1,6 +1,7 @@
 import deflateDecompresser
 import binascii
 import imageAtributes
+import directoryEntry
 
 def decode_chunks(chunksArray):
     mergedIdatChunkData = []
@@ -255,6 +256,7 @@ def decode_tIME(timeChunk):
 def decode_eXIf(exifChunk):
 
     header = []
+    ifd0 = []
 
     chunkIterator = 0
     while chunkIterator < 8:
@@ -268,3 +270,44 @@ def decode_eXIf(exifChunk):
     chunkIterator += offset_to_ifd0
     ifd0_number_of_directory_entries = exifChunk.dataArray[chunkIterator]
     print("ifd0 DE: " + str(ifd0_number_of_directory_entries))
+    chunkIterator += 1
+
+    deIterator = 0
+    while deIterator < ifd0_number_of_directory_entries:
+        tagId = []
+        tagType = []
+        count = []
+        offset = []
+
+        tagIdIterator = 0
+        while tagIdIterator < 2:
+            tagId.append(exifChunk.dataArray[chunkIterator])
+            chunkIterator += 1
+            tagIdIterator += 1
+
+        tagTypeIterator = 0
+        while tagTypeIterator < 2:
+            tagType.append(exifChunk.dataArray[chunkIterator])
+            chunkIterator += 1
+            tagTypeIterator += 1
+
+        countIterator = 0
+        while countIterator < 4:
+            count.append(exifChunk.dataArray[chunkIterator])
+            chunkIterator += 1
+            countIterator += 1
+
+        offsetIterator = 0
+        while offsetIterator < 4:
+            offset.append(exifChunk.dataArray[chunkIterator])
+            chunkIterator +=1
+            offsetIterator += 1
+        
+        ifd0.append(directoryEntry.DirectoryEntry(tagId, tagType, count, offset))
+        deIterator += 1
+
+        print("*** exifDE" + str(deIterator))
+        print(tagId)
+        print(offset)
+
+
