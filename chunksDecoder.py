@@ -256,8 +256,7 @@ def decode_tIME(timeChunk):
 def decode_eXIf(exifChunk):
 
     header = []
-    ifd0 = []
-    offset_to_next_IFDArray = []
+    IFDsArray = []
 
     chunkIterator = 0
     while chunkIterator < 8:
@@ -266,15 +265,22 @@ def decode_eXIf(exifChunk):
 
     # Offset is defined in bits so devidy by 8 to get byte
     offset_to_ifd0 = int((header[7] | (header[6]<<8) | (header[5]<<16) | (header[4]<<24)) / 8)
+    chunkIterator += offset_to_ifd0
     print("Offset to ifdo0 = " + str(offset_to_ifd0))
 
-    chunkIterator += offset_to_ifd0
-    ifd0_number_of_directory_entries = exifChunk.dataArray[chunkIterator]
-    print("ifd0 DE: " + str(ifd0_number_of_directory_entries))
+    IFDsArray.append(read_IFD(exifChunk, chunkIterator))
+
+
+    
+def read_IFD(exifChunk, chunkIterator):
+    ifd = []
+
+    ifd_number_of_directory_entries = exifChunk.dataArray[chunkIterator]
+    print("ifd DE: " + str(ifd_number_of_directory_entries))
     chunkIterator += 1
 
     deIterator = 0
-    while deIterator < ifd0_number_of_directory_entries:
+    while deIterator < ifd_number_of_directory_entries:
         tagId = []
         tagType = []
         count = []
@@ -304,14 +310,14 @@ def decode_eXIf(exifChunk):
             chunkIterator +=1
             offsetIterator += 1
         
-        ifd0.append(directoryEntry.DirectoryEntry(tagId, tagType, count, offset))
+        ifd.append(directoryEntry.DirectoryEntry(tagId, tagType, count, offset))
         deIterator += 1
 
         print("*** exifDE" + str(deIterator))
         print(tagId)
         print()
     
-
+    offset_to_next_IFDArray = []
     offsetIterator = 0
     while offsetIterator < 4:
         offset_to_next_IFDArray.append(exifChunk.dataArray[chunkIterator])
@@ -324,8 +330,5 @@ def decode_eXIf(exifChunk):
     else:
         chunkIterator += offset_to_next_IFD
 
-    # I teraz powinnismy zrobic to wszystko co na gorze ^^^^^^^^
-
-    
-
+    return ifd
 
