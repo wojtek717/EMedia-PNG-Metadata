@@ -264,3 +264,7 @@ def decode_eXIf(exifChunk):
     # Offset is defined in bits so devidy by 8 to get byte
     offset_to_ifd0 = int((header[7] | (header[6]<<8) | (header[5]<<16) | (header[4]<<24)) / 8)
     print("Offset to ifdo0 = " + str(offset_to_ifd0))
+
+    chunkIterator += offset_to_ifd0
+    ifd0_number_of_directory_entries = exifChunk.dataArray[chunkIterator]
+    print("ifd0 DE: " + str(ifd0_number_of_directory_entries))
