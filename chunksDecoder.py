@@ -257,6 +257,7 @@ def decode_eXIf(exifChunk):
 
     header = []
     ifd0 = []
+    offset_to_next_IFDArray = []
 
     chunkIterator = 0
     while chunkIterator < 8:
@@ -308,6 +309,23 @@ def decode_eXIf(exifChunk):
 
         print("*** exifDE" + str(deIterator))
         print(tagId)
-        print(offset)
+        print()
+    
+
+    offsetIterator = 0
+    while offsetIterator < 4:
+        offset_to_next_IFDArray.append(exifChunk.dataArray[chunkIterator])
+        chunkIterator +=1 
+        offsetIterator += 1
+    offset_to_next_IFD = offset_to_next_IFDArray[3] | (offset_to_next_IFDArray[2]<<8) | (offset_to_next_IFDArray[1]<<16) | (offset_to_next_IFDArray[0]<<24)
+
+    if(offset_to_next_IFD == 0):
+        print("There is not more IFD")
+    else:
+        chunkIterator += offset_to_next_IFD
+
+    # I teraz powinnismy zrobic to wszystko co na gorze ^^^^^^^^
+
+    
 
 
