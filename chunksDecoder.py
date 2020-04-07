@@ -2,6 +2,7 @@ import deflateDecompresser
 import binascii
 import imageAtributes
 import directoryEntry
+import tagTypes
 
 def decode_chunks(chunksArray):
     mergedIdatChunkData = []
@@ -286,7 +287,6 @@ def read_IFD(exifChunk, chunkIterator, isNextIFDPasser, chunkIteratorPasser):
 
     # Read amount of DE
     ifd_number_of_directory_entries = exifChunk.dataArray[chunkIterator]
-    print("ifd DE: " + str(ifd_number_of_directory_entries))
     chunkIterator += 1
 
     deIterator = 0
@@ -339,7 +339,6 @@ def read_IFD(exifChunk, chunkIterator, isNextIFDPasser, chunkIteratorPasser):
 
     # If offset == 0 there is not more IFD in exif
     if(offset_to_next_IFD == 0):
-        print("There is not more IFD")
         isNextIFDPasser[0] = False
     else:
         chunkIterator += offset_to_next_IFD
@@ -356,8 +355,8 @@ def readDatafromIFD(IFDsArray, exifChunk):
         numberOfDE = 0
         while numberOfDE < len(IFDsArray[numberOfIFD]):
             directoryEntry = IFDsArray[numberOfIFD][numberOfDE]
-            print("TagId = " + str(directoryEntry.tagIDArray))
-            print("DataLength = " + str(directoryEntry.getDataLength()))
+            print()
+            print("TagId = " +  tagTypes.getTagTypeString(directoryEntry.getTagIdNumber()))
 
             data = []
             dataIterator = 0
