@@ -5,6 +5,9 @@ class DirectoryEntry:
         self.countArray = countArray
         self.offsetArray = offsetArray
 
+    def getTagTypeNumber(self):
+        return (int(self.tagTypeArray[1] | (self.tagTypeArray[0]<<8)))
+
     def getOffset(self):
         offset = int((self.offsetArray[3] | (self.offsetArray[2]<<8) | (self.offsetArray[1]<<16) | (self.offsetArray[0]<<24)))
         return offset

@@ -373,7 +373,33 @@ def readDatafromIFD(IFDsArray, exifChunk):
 
                 dataIterator += 1
 
+            if(directoryEntry.getTagTypeNumber() == 2):
+                decodedText = bytearray(data).decode('utf-8')
+                print(decodedText)
+            elif(directoryEntry.getTagTypeNumber() == 3):
+                countIterator = 0
+                while countIterator < directoryEntry.getCount():
+                    number = data[1 + (countIterator * 2)] | (data[0 + (countIterator * 2)]<<8)
+                    print(number)
+                    countIterator += 1
+            elif(directoryEntry.getTagTypeNumber() == 4):
+                countIterator = 0
+                while countIterator < directoryEntry.getCount():
+                    number = data[3 + (countIterator * 2)] | (data[2 + (countIterator * 2)]<<8) | (data[1 + (countIterator * 2)]<<16) | (data[0 + (countIterator * 2)]<<24)
+                    print(number)
+                    countIterator += 1
+            elif(directoryEntry.getTagTypeNumber() == 5):
+                countIterator = 0
+                while countIterator < directoryEntry.getCount():
+                    numerator = data[3 + (countIterator * 2)] | (data[2 + (countIterator * 2)]<<8) | (data[1 + (countIterator * 2)]<<16) | (data[0 + (countIterator * 2)]<<24)
+                    denumerator = data[7 + (countIterator * 2)] | (data[6 + (countIterator * 2)]<<8) | (data[5 + (countIterator * 2)]<<16) | (data[4 + (countIterator * 2)]<<24)
+                    print(str(numerator) + "/" + str(denumerator))
+                    countIterator += 1
+            else:
+                print(data)
+
 
 
             numberOfDE += 1
         numberOfIFD += 1
+
