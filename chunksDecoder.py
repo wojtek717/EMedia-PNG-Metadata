@@ -254,7 +254,6 @@ def decode_tIME(timeChunk):
 
 ##### eXIf Chunk #####
 def decode_eXIf(exifChunk):
-
     header = []
     IFDsArray = []
 
@@ -271,13 +270,15 @@ def decode_eXIf(exifChunk):
     # Offset is defined in bits so devidy by 8 to get byte
     offset_to_ifd0 = int((header[7] | (header[6]<<8) | (header[5]<<16) | (header[4]<<24)) / 8)
     chunkIterator += offset_to_ifd0
-    print("Offset to ifdo0 = " + str(offset_to_ifd0))
 
     # Call that function again if offset to next IFD != 0
     # And get correct value of chunkIterator 
     while isNextIFDPasser[0] == True:
         IFDsArray.append(read_IFD(exifChunk, chunkIterator, isNextIFDPasser, chunkIteratorPasser))
         chunkIterator = chunkIteratorPasser[0]
+    
+    readDatafromIFD(IFDsArray, exifChunk)
+    
 
     
 def read_IFD(exifChunk, chunkIterator, isNextIFDPasser, chunkIteratorPasser):
@@ -327,10 +328,6 @@ def read_IFD(exifChunk, chunkIterator, isNextIFDPasser, chunkIteratorPasser):
         ifd.append(directoryEntry.DirectoryEntry(tagId, tagType, count, offset))
         deIterator += 1
 
-        print("*** exifDE" + str(deIterator))
-        print(tagId)
-        print()
-
     # Read offset to next IFD
     offset_to_next_IFDArray = []
     offsetIterator = 0
@@ -352,3 +349,31 @@ def read_IFD(exifChunk, chunkIterator, isNextIFDPasser, chunkIteratorPasser):
 
     # Return IFD that contain n DE
     return ifd
+
+def readDatafromIFD(IFDsArray, exifChunk):
+    numberOfIFD = 0
+    while numberOfIFD < len(IFDsArray):
+        numberOfDE = 0
+        while numberOfDE < len(IFDsArray[numberOfIFD]):
+            directoryEntry = IFDsArray[numberOfIFD][numberOfDE]
+            print("TagId = " + str(directoryEntry.tagIDArray))
+            print("DataLength = " + str(directoryEntry.getDataLength()))
+
+            data = []
+            dataIterator = 0
+            while dataIterator < directoryEntry.getDataLength():
+
+                # Data can fit into offset field
+                if(directoryEntry.getDataLength() <= 4):
+                    dataIndex = dataIterator
+                    data.append(directoryEntry.offsetArray[dataIndex])
+                else:
+                    dataIndex = directoryEntry.getOffset() + dataIterator
+                    data.append(exifChunk.dataArray[dataIndex])
+
+                dataIterator += 1
+
+
+
+            numberOfDE += 1
+        numberOfIFD += 1

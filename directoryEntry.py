@@ -33,3 +33,9 @@ class DirectoryEntry:
             tagTypeNumber == 10 or
             tagTypeNumber == 12):
             return 8
+
+    def getDataLength(self):
+        size = self.getDEsize()
+        count = self.getCount()
+
+        return size*count
