@@ -16,7 +16,7 @@ def check_sygnature(bArray):
     return True
 
 def main():
-    filename = 'images/ex1_indexed.png'
+    filename = 'images/ex3_exifchunk.png'
     fileChunks = []
 
     # Open and read file into byte array

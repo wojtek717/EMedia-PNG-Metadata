@@ -1,6 +1,8 @@
 import deflateDecompresser
 import binascii
 import imageAtributes
+import directoryEntry
+import tagTypes
 
 def decode_chunks(chunksArray):
     mergedIdatChunkData = []
@@ -27,6 +29,9 @@ def decode_chunks(chunksArray):
         
         if(chunksArray[chunkIterator].getChunkTypeText() == 'PLTE'):
             decode_PLTE(chunksArray[chunkIterator])
+
+        if(chunksArray[chunkIterator].getChunkTypeText() == 'eXIf'):
+            decode_eXIf(chunksArray[chunkIterator])
 
         if(chunksArray[chunkIterator].getChunkTypeText() == 'tIME'):
             decode_tIME(chunksArray[chunkIterator])
@@ -247,3 +252,153 @@ def decode_tIME(timeChunk):
     time = str(hour) + ":" + str(minute) + ":" + str(secod)
 
     print("Last modification: " + date + " " + time)
+
+##### eXIf Chunk #####
+def decode_eXIf(exifChunk):
+    header = []
+    IFDsArray = []
+
+    # We need that lists to return elements by arguments in function
+    isNextIFDPasser = [True]
+    chunkIteratorPasser = [0]
+
+    # Read header
+    chunkIterator = 0
+    while chunkIterator < 8:
+        header.append(exifChunk.dataArray[chunkIterator])
+        chunkIterator += 1
+
+    # Offset is defined in bits so devidy by 8 to get byte
+    offset_to_ifd0 = int((header[7] | (header[6]<<8) | (header[5]<<16) | (header[4]<<24)) / 8)
+    chunkIterator += offset_to_ifd0
+
+    # Call that function again if offset to next IFD != 0
+    # And get correct value of chunkIterator 
+    while isNextIFDPasser[0] == True:
+        IFDsArray.append(read_IFD(exifChunk, chunkIterator, isNextIFDPasser, chunkIteratorPasser))
+        chunkIterator = chunkIteratorPasser[0]
+    
+    readDatafromIFD(IFDsArray, exifChunk)
+    
+
+    
+def read_IFD(exifChunk, chunkIterator, isNextIFDPasser, chunkIteratorPasser):
+    ifd = []
+
+    # Read amount of DE
+    ifd_number_of_directory_entries = exifChunk.dataArray[chunkIterator]
+    chunkIterator += 1
+
+    deIterator = 0
+    while deIterator < ifd_number_of_directory_entries:
+        tagId = []
+        tagType = []
+        count = []
+        offset = []
+
+        # Read tagID
+        tagIdIterator = 0
+        while tagIdIterator < 2:
+            tagId.append(exifChunk.dataArray[chunkIterator])
+            chunkIterator += 1
+            tagIdIterator += 1
+
+        # Read tagType
+        tagTypeIterator = 0
+        while tagTypeIterator < 2:
+            tagType.append(exifChunk.dataArray[chunkIterator])
+            chunkIterator += 1
+            tagTypeIterator += 1
+
+        # Read tag's count
+        countIterator = 0
+        while countIterator < 4:
+            count.append(exifChunk.dataArray[chunkIterator])
+            chunkIterator += 1
+            countIterator += 1
+
+        # Read offset to data
+        offsetIterator = 0
+        while offsetIterator < 4:
+            offset.append(exifChunk.dataArray[chunkIterator])
+            chunkIterator +=1
+            offsetIterator += 1
+        
+        # Save DE to IFD list
+        ifd.append(directoryEntry.DirectoryEntry(tagId, tagType, count, offset))
+        deIterator += 1
+
+    # Read offset to next IFD
+    offset_to_next_IFDArray = []
+    offsetIterator = 0
+    while offsetIterator < 4:
+        offset_to_next_IFDArray.append(exifChunk.dataArray[chunkIterator])
+        chunkIterator +=1 
+        offsetIterator += 1
+    offset_to_next_IFD = offset_to_next_IFDArray[3] | (offset_to_next_IFDArray[2]<<8) | (offset_to_next_IFDArray[1]<<16) | (offset_to_next_IFDArray[0]<<24)
+
+    # If offset == 0 there is not more IFD in exif
+    if(offset_to_next_IFD == 0):
+        isNextIFDPasser[0] = False
+    else:
+        chunkIterator += offset_to_next_IFD
+        isNextIFDPasser[0] = True
+
+    chunkIteratorPasser[0] = chunkIterator
+
+    # Return IFD that contain n DE
+    return ifd
+
+def readDatafromIFD(IFDsArray, exifChunk):
+    numberOfIFD = 0
+    while numberOfIFD < len(IFDsArray):
+        numberOfDE = 0
+        while numberOfDE < len(IFDsArray[numberOfIFD]):
+            directoryEntry = IFDsArray[numberOfIFD][numberOfDE]
+            print()
+            print("TagId = " +  tagTypes.getTagTypeString(directoryEntry.getTagIdNumber()))
+
+            data = []
+            dataIterator = 0
+            while dataIterator < directoryEntry.getDataLength():
+
+                # Data can fit into offset field
+                if(directoryEntry.getDataLength() <= 4):
+                    dataIndex = dataIterator
+                    data.append(directoryEntry.offsetArray[dataIndex])
+                else:
+                    dataIndex = directoryEntry.getOffset() + dataIterator
+                    data.append(exifChunk.dataArray[dataIndex])
+
+                dataIterator += 1
+
+            if(directoryEntry.getTagTypeNumber() == 2):
+                decodedText = bytearray(data).decode('utf-8')
+                print(decodedText)
+            elif(directoryEntry.getTagTypeNumber() == 3):
+                countIterator = 0
+                while countIterator < directoryEntry.getCount():
+                    number = data[1 + (countIterator * 2)] | (data[0 + (countIterator * 2)]<<8)
+                    print(number)
+                    countIterator += 1
+            elif(directoryEntry.getTagTypeNumber() == 4):
+                countIterator = 0
+                while countIterator < directoryEntry.getCount():
+                    number = data[3 + (countIterator * 2)] | (data[2 + (countIterator * 2)]<<8) | (data[1 + (countIterator * 2)]<<16) | (data[0 + (countIterator * 2)]<<24)
+                    print(number)
+                    countIterator += 1
+            elif(directoryEntry.getTagTypeNumber() == 5):
+                countIterator = 0
+                while countIterator < directoryEntry.getCount():
+                    numerator = data[3 + (countIterator * 2)] | (data[2 + (countIterator * 2)]<<8) | (data[1 + (countIterator * 2)]<<16) | (data[0 + (countIterator * 2)]<<24)
+                    denumerator = data[7 + (countIterator * 2)] | (data[6 + (countIterator * 2)]<<8) | (data[5 + (countIterator * 2)]<<16) | (data[4 + (countIterator * 2)]<<24)
+                    print(str(numerator) + "/" + str(denumerator))
+                    countIterator += 1
+            else:
+                print(data)
+
+
+
+            numberOfDE += 1
+        numberOfIFD += 1
+
