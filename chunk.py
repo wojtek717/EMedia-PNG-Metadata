@@ -27,6 +27,9 @@ class Chunk:
     def getChunkLength(self):
         return len(self.dataArray)
 
+    def getChunk(self):
+        return self
+
 # Function that provides reading chunk from PNG file and returns chunk object
 def read_chunk(bArray, startIndex):
     chunkIterator = startIndex

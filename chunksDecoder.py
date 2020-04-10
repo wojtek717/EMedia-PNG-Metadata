@@ -280,8 +280,6 @@ def decode_eXIf(exifChunk):
     
     readDatafromIFD(IFDsArray, exifChunk)
     
-
-    
 def read_IFD(exifChunk, chunkIterator, isNextIFDPasser, chunkIteratorPasser):
     ifd = []
 
