@@ -35,7 +35,6 @@ def decode_chunks(chunksArray):
 
         if(chunksArray[chunkIterator].getChunkTypeText() == 'tIME'):
             decode_tIME(chunksArray[chunkIterator])
-        #TODO add if statements for other chunks then handle their decode methods
         
         chunkIterator += 1
 
@@ -279,8 +278,6 @@ def decode_eXIf(exifChunk):
         chunkIterator = chunkIteratorPasser[0]
     
     readDatafromIFD(IFDsArray, exifChunk)
-    
-
     
 def read_IFD(exifChunk, chunkIterator, isNextIFDPasser, chunkIteratorPasser):
     ifd = []

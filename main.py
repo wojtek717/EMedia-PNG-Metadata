@@ -1,6 +1,7 @@
 import binascii
 import chunk as PNGChunk
 import chunksDecoder as CDecoder
+import chunksAnonimizer as CAnonimizer
 
 # Function that checks if PNG sygnature is valid
 def check_sygnature(bArray):
@@ -32,6 +33,7 @@ def main():
         chunkIndex = fileChunks[-1].nextChunkIndex
 
     CDecoder.decode_chunks(fileChunks)
+    CAnonimizer.anonimize_chunks(fileChunks)
 
 if __name__ == "__main__":
     main()
