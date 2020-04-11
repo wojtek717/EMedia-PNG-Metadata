@@ -1,21 +1,10 @@
-from numpy import savetxt
-
-def listToString(list):
-    s = ""
-    counter = 0
-
-    for element in list:
-        s += element
-        if(counter < (len(list) - 1)):
-            s += " "
-        counter += 1
-    return s
-
+def getPNGSygnatureAsBytes():
+    sygnature = [137, 80, 78, 71, 13, 10, 26, 10]
+    return bytearray(sygnature)
 
 def anonimize_chunks(chunksArray):
-    onlyCriticalChunks = []
-    file = open("anonimized.txt","a")
-    s = ""
+    file = open("anonimized.png","a+b")
+    file.write(getPNGSygnatureAsBytes())
 
     chunkIterator = 0
     while chunkIterator < len(chunksArray):
@@ -24,12 +13,6 @@ def anonimize_chunks(chunksArray):
             (chunksArray[chunkIterator].getChunkTypeText() == 'IDAT') or
             (chunksArray[chunkIterator].getChunkTypeText() == 'IEND')):
 
-            onlyCriticalChunks.append(chunksArray[chunkIterator].getChunk())
+            file.write(chunksArray[chunkIterator].getChunkAsList())
             
         chunkIterator += 1
-    
-    tmp = onlyCriticalChunks[0].lengthArray
-    mapka = map(str, tmp)
-    listka = list(mapka)
-    s = listToString(listka)
-    file.write(s)
