@@ -37,8 +37,6 @@ def main():
 
     CDecoder.decode_chunks(fileChunks, mergedIdatChunkData)
 
-    #print(str(mergedIdatChunkData))
-
     fr.showFourrierSpectrum(filename)
 
 

@@ -6,8 +6,9 @@ import matplotlib.pyplot as plt
 def showFourrierSpectrum(filename):
     plt.figure(figsize=(6.4*4, 4.8*4), constrained_layout=False)
 
-    
-    img_c1 = np.array(Image.open(filename))
+    im = Image.open(filename)
+    img_c1 = np.array(im)
+    im.show()
 
     img_c2 = np.fft.fft2(img_c1)
     img_c3 = np.fft.fftshift(img_c2)
