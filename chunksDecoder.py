@@ -40,6 +40,9 @@ def decode_chunks(chunksArray):
 
 ##### IHDR Chunk #####
 def decode_IHDR(ihdrChunk):
+
+    print("\nIHDR: ")
+
     width = ihdrChunk.dataArray[3] | (ihdrChunk.dataArray[2]<<8) | (ihdrChunk.dataArray[1]<<16) | (ihdrChunk.dataArray[0]<<24)
     height = ihdrChunk.dataArray[7] | (ihdrChunk.dataArray[6]<<8) | (ihdrChunk.dataArray[5]<<16) | (ihdrChunk.dataArray[4]<<24)
     bitDepth = ihdrChunk.dataArray[8]
@@ -111,16 +114,21 @@ def merge_IDATs(mergedIdatChunkData, idatChunk):
     mergedIdatChunkData += idatChunk.dataArray
 
 def decode_IDAT(idatChunk, imageAtributes):
+
+    print("\nIDAT: ")
+
     shouldHaveBytes = int(imageAtributes.width * imageAtributes.height * (imageAtributes.bitDepth / 8) + imageAtributes.height)
     decompressedByteArray = deflateDecompresser.decompress_text(idatChunk)
 
-    if(len(decompressedByteArray) > shouldHaveBytes):
-        print("Redundant bytes: " + str(len(decompressedByteArray[shouldHaveBytes::])) + " ---> " + str(binascii.hexlify(decompressedByteArray[shouldHaveBytes::])))
-    else:
-        print("No redundant bytes in IDAT chunk")
+    #if(len(decompressedByteArray) > shouldHaveBytes):
+    #    print("Redundant bytes: " + str(len(decompressedByteArray[shouldHaveBytes::])) + " ---> " + str(binascii.hexlify(decompressedByteArray[shouldHaveBytes::])))
+    #else:
+    #    print("No redundant bytes in IDAT chunk")
    
 ##### PLTE Chunk #####
 def decode_PLTE(plteChunk):
+
+    print("\nPLTE: ")
 
     length = int(plteChunk.getChunkLength()/3)
     print(str(length) + " palette(s) present.")
@@ -134,6 +142,9 @@ def decode_PLTE(plteChunk):
 
 ##### tEXt Chunk #####
 def decode_tEXt(textualChunk):
+
+    print("\ntEXt: ")
+
     # Read and decode keyWord
     keyWord = []
     decodedKeyWord = ''
@@ -159,6 +170,9 @@ def decode_tEXt(textualChunk):
 
 ##### zTXt #####
 def decode_zTXt(textualChunk):
+
+    print("\nzTXt: ")
+
     # Read and decode keyWord
     keyWord = []
     decodedKeyWord = ''
@@ -191,6 +205,9 @@ def decode_zTXt(textualChunk):
 
 ##### iTXt Chunk #####
 def decode_iTXt(textualChunk):
+
+    print("\niTXt: ")
+
     # Read and decode keyWord
     keyWord = []
     decodedKeyWord = ''
@@ -239,6 +256,9 @@ def decode_iTXt(textualChunk):
 
 ##### tIME Chunk #####
 def decode_tIME(timeChunk):
+
+    print("\ntIME: ")
+
     year = timeChunk.dataArray[1] | (timeChunk.dataArray[0]<<8)
     month = timeChunk.dataArray[2]
     day = timeChunk.dataArray[3]
@@ -254,6 +274,9 @@ def decode_tIME(timeChunk):
 
 ##### eXIf Chunk #####
 def decode_eXIf(exifChunk):
+
+    print("\neXIf: ")
+
     header = []
     IFDsArray = []
 

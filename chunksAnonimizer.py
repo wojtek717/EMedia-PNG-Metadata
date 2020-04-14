@@ -2,13 +2,13 @@ def getPNGSygnatureAsBytes():
     sygnature = [137, 80, 78, 71, 13, 10, 26, 10]
     return bytearray(sygnature)
 
-def anonimize_chunks(chunksArray):
+def anonimize_chunks(chunksArray, fileName):
     isIDATChain = False
     wasIDAT = False
 
-    fileName = input("Enter file name (without extension)")
-    fileName += ".png"
-    file = open(fileName, "a+b")
+    #fileName = input("Enter file name (without extension)")
+    #fileName += ".png"
+    file = open(fileName, "w+b")
 
     # Write PNG file sygnature
     file.write(getPNGSygnatureAsBytes())
@@ -22,7 +22,7 @@ def anonimize_chunks(chunksArray):
             (chunksArray[chunkIterator].getChunkTypeText() == 'IEND')):
 
             # Some information can be stored in IDAT chunks after main IDATs chain which are NOT displayed
-            # Remove that IDAT chunks
+            # Removing those IDAT chunks
             if(chunksArray[chunkIterator].getChunkTypeText() == 'IDAT' and wasIDAT == False):
                 wasIDAT = True
                 isIDATChain = True
