@@ -5,9 +5,9 @@ import directoryEntry
 import tagTypes
 
 def decode_chunks(chunksArray):
+    chunkIterator = 0
     mergedIdatChunkData = []
 
-    chunkIterator = 0
     while chunkIterator < len(chunksArray):
         if(chunksArray[chunkIterator].getChunkTypeText() == 'IHDR'):
             imageAtributes = decode_IHDR(chunksArray[chunkIterator])
@@ -22,10 +22,10 @@ def decode_chunks(chunksArray):
             decode_iTXt(chunksArray[chunkIterator])
 
         if(chunksArray[chunkIterator].getChunkTypeText() == 'IDAT'):
-            mergedIdatChunkData = merge_IDATs(mergedIdatChunkData, chunksArray[chunkIterator])
+            merge_IDATs(mergedIdatChunkData, chunksArray[chunkIterator])
 
         if(chunksArray[chunkIterator].getChunkTypeText() == 'IEND'):
-            decode_IDAT(mergedIdatChunkData, imageAtributes)        
+            decode_IDAT(mergedIdatChunkData, imageAtributes)    
         
         if(chunksArray[chunkIterator].getChunkTypeText() == 'PLTE'):
             decode_PLTE(chunksArray[chunkIterator])
@@ -108,7 +108,7 @@ def decode_IHDRinterlaceMethod(interlaceMethod):
 
 ##### IDAT Chunk #####
 def merge_IDATs(mergedIdatChunkData, idatChunk):
-    return(mergedIdatChunkData + idatChunk.dataArray)
+    mergedIdatChunkData += idatChunk.dataArray
 
 def decode_IDAT(idatChunk, imageAtributes):
     shouldHaveBytes = int(imageAtributes.width * imageAtributes.height * (imageAtributes.bitDepth / 8) + imageAtributes.height)

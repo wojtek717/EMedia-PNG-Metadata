@@ -1,7 +1,9 @@
-import binascii
 import chunk as PNGChunk
 import chunksDecoder as CDecoder
 import chunksAnonimizer as CAnonimizer
+
+import fourrier as fr
+
 
 # Function that checks if PNG sygnature is valid
 def check_sygnature(bArray):
@@ -17,7 +19,7 @@ def check_sygnature(bArray):
     return True
 
 def main():
-    filename = 'images/ex3_exifchunk.png'
+    filename = 'images/ex3_duzy.png'
     fileChunks = []
 
     # Open and read file into byte array
@@ -34,6 +36,11 @@ def main():
 
     CDecoder.decode_chunks(fileChunks)
     CAnonimizer.anonimize_chunks(fileChunks)
+
+    fr.showImage(filename)
+
+    fr.showFourrierSpectrum(filename)
+
 
 if __name__ == "__main__":
     main()
