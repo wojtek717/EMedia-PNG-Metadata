@@ -4,8 +4,10 @@ import imageAtributes
 import directoryEntry
 import tagTypes
 
-def decode_chunks(chunksArray, mergedIdatChunkData):
+def decode_chunks(chunksArray):
     chunkIterator = 0
+    mergedIdatChunkData = []
+
     while chunkIterator < len(chunksArray):
         if(chunksArray[chunkIterator].getChunkTypeText() == 'IHDR'):
             imageAtributes = decode_IHDR(chunksArray[chunkIterator])

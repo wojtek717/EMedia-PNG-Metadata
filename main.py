@@ -19,8 +19,6 @@ def check_sygnature(bArray):
 
 def main():
     filename = 'images/ex3_duzy.png'
-
-    mergedIdatChunkData = []
     fileChunks = []
 
     # Open and read file into byte array
@@ -35,7 +33,7 @@ def main():
         fileChunks.append(PNGChunk.read_chunk(byteArray, chunkIndex))
         chunkIndex = fileChunks[-1].nextChunkIndex
 
-    CDecoder.decode_chunks(fileChunks, mergedIdatChunkData)
+    CDecoder.decode_chunks(fileChunks)
 
     fr.showImage(filename)
 

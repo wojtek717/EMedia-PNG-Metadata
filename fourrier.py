@@ -18,9 +18,8 @@ def showFourrierSpectrum(filename):
     plt.subplot(223), plt.imshow(20*np.log(1+np.abs(img_c3)), "gray"), plt.title("Centered")
     plt.subplot(224), plt.imshow(np.abs(img_c4), "gray"), plt.title("Processed Image")
 
-    plt.show()
-
     plt.savefig("figures/mygraph.png")
+    plt.show()
 
 
 def showImage(filename):
