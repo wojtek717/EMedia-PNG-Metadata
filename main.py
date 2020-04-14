@@ -1,5 +1,6 @@
 import chunk as PNGChunk
 import chunksDecoder as CDecoder
+import chunksAnonimizer as CAnonimizer
 
 import fourrier as fr
 
@@ -35,12 +36,12 @@ def main():
         fileChunks.append(PNGChunk.read_chunk(byteArray, chunkIndex))
         chunkIndex = fileChunks[-1].nextChunkIndex
 
-    CDecoder.decode_chunks(fileChunks, mergedIdatChunkData)
-
+    CDecoder.decode_chunks(fileChunks)
+    
     fr.showImage(filename)
-
     fr.showFourrierSpectrum(filename)
-
+    
+    CAnonimizer.anonimize_chunks(fileChunks)
 
 if __name__ == "__main__":
     main()
