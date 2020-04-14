@@ -1,6 +1,8 @@
-import binascii
 import chunk as PNGChunk
 import chunksDecoder as CDecoder
+
+import fourrier as fr
+
 
 # Function that checks if PNG sygnature is valid
 def check_sygnature(bArray):
@@ -16,7 +18,9 @@ def check_sygnature(bArray):
     return True
 
 def main():
-    filename = 'images/ex3_exifchunk.png'
+    filename = 'images/ex3_duzy.png'
+
+    mergedIdatChunkData = []
     fileChunks = []
 
     # Open and read file into byte array
@@ -31,7 +35,12 @@ def main():
         fileChunks.append(PNGChunk.read_chunk(byteArray, chunkIndex))
         chunkIndex = fileChunks[-1].nextChunkIndex
 
-    CDecoder.decode_chunks(fileChunks)
+    CDecoder.decode_chunks(fileChunks, mergedIdatChunkData)
+
+    #print(str(mergedIdatChunkData))
+
+    fr.showFourrierSpectrum(filename)
+
 
 if __name__ == "__main__":
     main()
