@@ -12,7 +12,7 @@ class Chunk:
 
         self.calculateNextChunkIndex(self.nextChunkIndex)
 
-        print('Chunk type ->' + self.getChunkTypeText())
+        #print('Chunk type ->' + self.getChunkTypeText())
 
     # IEND chunk is the last one so we need to point out that 
     def calculateNextChunkIndex(self, nextChunkIndex):
