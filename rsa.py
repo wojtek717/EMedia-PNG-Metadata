@@ -60,5 +60,3 @@ def generate_keys():
     privateKey = (n, d)
 
     return(publicKey, privateKey)
-
-generate_keys()
