@@ -43,4 +43,3 @@ def generate_prime_number(length=1024):
     while not is_prime(p, 128):
         p = generate_prime_candidate(length)
     return p
-print(generate_prime_number())
