@@ -1,6 +1,11 @@
 import primeNumberGenerator as pnum
 import random
 
+class Keys_Collection:
+    def __init__(self, publicKey, privateKey):
+        self.publicKey = publicKey
+        self.privateKey = privateKey
+
 def nwd(a, b):
     if(a < b):
         tmp = a
@@ -53,3 +58,7 @@ def generate_keys():
 
     publicKey = (n, e)
     privateKey = (n, d)
+
+    return(publicKey, privateKey)
+
+generate_keys()
