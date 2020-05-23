@@ -37,7 +37,7 @@ def generate_prime_candidate(length):
     return p
 
 # length - the length of the number in bits 
-def generate_prime_number(length=8):
+def generate_prime_number(length=1024):
     p = 4
 
     while not is_prime(p, 128):
