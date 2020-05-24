@@ -76,6 +76,8 @@ def multiplicative_inverse(e, phi):
         return d + phi
 
 def generate_keys():
+    sys.setrecursionlimit(10**6) 
+
     p = pnum.generate_prime_number()
     q = pnum.generate_prime_number()
 
@@ -92,22 +94,38 @@ def generate_keys():
     privateKey = Private_Key(n, d)
 
     return(Keys_Collection(publicKey, privateKey))
+    
+def encrypt(publicKey, data):
+    encryptedData = []
 
-sys.setrecursionlimit(10**6) 
-start_time = time.time()
-m = 9
+    for m in data:
+        c = pow(m, keys.publicKey.e, keys.publicKey.n)
+        encryptedData.append(c)
+
+    return encryptedData
+
+def decrypt(privateKey, data):
+    decryptedData = []
+
+    for c in data:
+        m = pow(c, keys.privateKey.d, keys.privateKey.n)
+        decryptedData.append(m)
+
+    return decryptedData
+
+
+
 keys = generate_keys()
 
-#szyfrowanie
-c = pow(m, keys.publicKey.e, keys.publicKey.n)
-print("Encrypted Value:::")
-print(c)
+data = [9, 12, 42, 123]
 
-mm = pow(c, keys.privateKey.d, keys.privateKey.n)
+#szyfrowanie
+print("Encrypted Value:::")
+e = encrypt(keys.publicKey, data)
+print(e)
+
 print("Decrypted Value:::")
-print(mm)
+print(decrypt(keys.privateKey, e))
 
 print("Given Value:::")
-print(m)
-
-print("--- %s seconds ---" % (time.time() - start_time))
+print(data)
