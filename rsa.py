@@ -75,11 +75,11 @@ def multiplicative_inverse(e, phi):
     if temp_phi == 1:
         return d + phi
 
-def generate_keys():
+def generate_keys(length):
     sys.setrecursionlimit(10**6) 
 
-    p = pnum.generate_prime_number()
-    q = pnum.generate_prime_number()
+    p = pnum.generate_prime_number(length)
+    q = pnum.generate_prime_number(length)
 
     n = p*q
     phi = (p-1)*(q-1)
@@ -113,9 +113,7 @@ def decrypt(privateKey, data):
 
     return decryptedData
 
-
-
-keys = generate_keys()
+keys = generate_keys(1024)
 
 data = [9, 12, 42, 123]
 
