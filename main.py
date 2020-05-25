@@ -3,9 +3,11 @@ import chunksDecoder as CDecoder
 import chunksAnonimizer as CAnonimizer
 import fourrier as fr
 import signature 
+import chunkCrypter
+import rsa
 
 def menu():
-
+    keys = rsa.generate_keys(100)
     fileinput_FLAG = False
 
     #attempt to read an image until successfull or user quits
@@ -84,6 +86,9 @@ def menu():
             print("Program terminated.")
             return 0
 
+        elif(menu_choice == 6):
+            chunkCrypter.encrypt_chunks(fileChunks, keys.publicKey)
+
         #MENU EXCEPTION
         else:
             print("Wrong option, try again.")
@@ -91,7 +96,6 @@ def menu():
 
     
 def main():
-
     menu()
 
 

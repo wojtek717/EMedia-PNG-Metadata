@@ -2,6 +2,8 @@ import primeNumberGenerator as pnum
 import random
 import time
 import sys
+import math
+import functools
 
 class Keys_Collection:
     def __init__(self, publicKey, privateKey):
@@ -94,36 +96,83 @@ def generate_keys(length):
     privateKey = Private_Key(n, d)
 
     return(Keys_Collection(publicKey, privateKey))
+
+def encryptArray(publicKey, frameLength, data):
+    stackedData = []
+
+    frames = math.ceil(len(data) / frameLength)
     
+    f = 0
+    i = 0
+    while f < frames:
+        frameDataArray = []
+        frameDataArray.clear()
+
+        while i < (frameLength * (f+1)):
+            if(i < len(data)):
+                numb = data[i] + 300
+                frameDataArray.append(numb)
+            else:
+                frameDataArray.append(300)
+            i += 1
+
+        frameData = int("".join(map(str, frameDataArray))) 
+        print(frameData)
+        stackedData.append(frameData)
+        
+        f += 1
+    
+    encryptedData = encrypt(publicKey, stackedData)
+    return encryptedData
+
+def decryptArray(privateKey, frameLength, data):
+    decryptedData = decrypt(privateKey, data)
+    unStackedData = []
+
+    for stack in decryptedData:
+        chStack = str(stack)
+
+        f = 0
+        while f < frameLength:
+            i = 0
+            frame = ""
+            while i < 3:
+                frame += chStack[(3*f + i)]
+                i += 1
+            numb = int(frame)
+            realNumb = numb - 300
+            unStackedData.append(realNumb)
+            f += 1
+    
+    print("UNSTACKED")
+    print(unStackedData)
+
 def encrypt(publicKey, data):
     encryptedData = []
 
+    print("Enkryptuje sobie")
+
     for m in data:
-        c = pow(m, keys.publicKey.e, keys.publicKey.n)
+        c = pow(m, publicKey.e, publicKey.n)
         encryptedData.append(c)
 
+    print(encryptedData)
     return encryptedData
 
 def decrypt(privateKey, data):
     decryptedData = []
 
     for c in data:
-        m = pow(c, keys.privateKey.d, keys.privateKey.n)
+        m = pow(c, privateKey.d, privateKey.n)
         decryptedData.append(m)
 
+    print(decryptedData)
     return decryptedData
 
-keys = generate_keys(1024)
-
-data = [9, 12, 42, 123]
-
-#szyfrowanie
-print("Encrypted Value:::")
-e = encrypt(keys.publicKey, data)
-print(e)
-
-print("Decrypted Value:::")
-print(decrypt(keys.privateKey, e))
-
-print("Given Value:::")
+print("Szyfruje: ")
+data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 print(data)
+keys = generate_keys(512)
+
+eData = encryptArray(keys.publicKey, 7, data)
+decryptArray(keys.privateKey, 7, eData)
