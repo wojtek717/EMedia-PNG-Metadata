@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageFile
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -24,5 +24,6 @@ def showFourrierSpectrum(filePath, fileName):
 
 
 def showImage(filename):
-     im = Image.open(filename)
-     im.show()
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
+    im = Image.open(filename)
+    im.show()

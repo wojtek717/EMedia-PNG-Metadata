@@ -169,10 +169,10 @@ def decrypt(privateKey, data):
     print(decryptedData)
     return decryptedData
 
-print("Szyfruje: ")
-data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-print(data)
-keys = generate_keys(512)
+# print("Szyfruje: ")
+# data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+# print(data)
+# keys = generate_keys(512)
 
-eData = encryptArray(keys.publicKey, 7, data)
-decryptArray(keys.privateKey, 7, eData)
+# eData = encryptArray(keys.publicKey, 7, data)
+# decryptArray(keys.privateKey, 7, eData)
