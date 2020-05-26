@@ -24,7 +24,7 @@ class Private_Key:
         self.d = d
 
     def printKey(self):
-        print("Public key ---> n=" + str(self.n) + " d=" + str(self.d))
+        print("Private key ---> n=" + str(self.n) + " d=" + str(self.d))
 
 def nwd(a, b):
     if(a < b):
@@ -113,7 +113,7 @@ def encryptArray(publicKey, frameLength, data):
                 numb = data[i] + 300
                 frameDataArray.append(numb)
             else:
-                frameDataArray.append(300)
+                frameDataArray.append(600)
             i += 1
 
         frameData = int("".join(map(str, frameDataArray))) 
@@ -141,8 +141,11 @@ def decryptArray(privateKey, frameLength, data):
                 i += 1
             numb = int(frame)
             realNumb = numb - 300
-            unStackedData.append(realNumb)
+
+            if(realNumb < 256):
+                unStackedData.append(realNumb)
             f += 1
+    return unStackedData
     
     print("UNSTACKED")
     print(unStackedData)
@@ -166,13 +169,15 @@ def decrypt(privateKey, data):
         m = pow(c, privateKey.d, privateKey.n)
         decryptedData.append(m)
 
-    print(decryptedData)
+    #print(decryptedData)
     return decryptedData
 
 # print("Szyfruje: ")
 # data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 # print(data)
 # keys = generate_keys(512)
+# print(keys.publicKey.printKey())
+# print(keys.privateKey.printKey())
 
 # eData = encryptArray(keys.publicKey, 7, data)
 # decryptArray(keys.privateKey, 7, eData)

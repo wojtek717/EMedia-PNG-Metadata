@@ -17,16 +17,20 @@ def encrypt_chunks(chunksArray, publicKey):
             # Encrypt chunk Length
             lengthArray = []
             encryptedLength = rsa.encryptArray(publicKey, 64, chunk.lengthArray)
+            print("encryptedLength")
+            print(encryptedLength)
             for lengthFrame in encryptedLength:
-                byteEncryptedLength = (lengthFrame).to_bytes(32,byteorder='big')
+                byteEncryptedLength = (lengthFrame).to_bytes(128,byteorder='big')
                 for byte in byteEncryptedLength:
                     lengthArray.append(byte)
 
             # Encrypt chunk data
             newDataArray = []
             encryptedData = rsa.encryptArray(publicKey, 64, chunk.dataArray)
+            print("encryptedData")
+            print(encryptedData)
             for dataFrame in encryptedData:
-                byteEncryptedData = (dataFrame).to_bytes(32,byteorder='big')
+                byteEncryptedData = (dataFrame).to_bytes(128,byteorder='big')
                 for byte in byteEncryptedData:
                     newDataArray.append(byte)
 
@@ -46,9 +50,35 @@ def encrypt_chunks(chunksArray, publicKey):
         chunkIterator += 1
 
 def decrypt_chunks(chunksArray, privateKey):
+
+    file = open("odszyfrowane.png", "w+b")
+    file.write(getPNGSygnatureAsBytes())
     
     chunkIterator = 0
     while chunkIterator < len(chunksArray):
-        if(chunksArray[chunkIterator].getChunkTypeText() == 'IDAT'):
-            rsa.decrypt(privateKey, chunksArray[chunkIterator].dataArray)
+        chunk = chunksArray[chunkIterator]
+        if(chunk.getChunkTypeText() == 'IDAT'):
+            chunkFrames = []
+
+            frames = len(chunk.dataArray) / 128
+
+            frame = 0
+            byte = 0
+            while frame < frames:
+                frameData = []
+
+                while byte < (128 * (frame + 1)):
+                    frameData.append(chunk.dataArray[byte])
+                    byte += 1
+                
+                encryptedData = int.from_bytes(frameData,byteorder='big')
+                chunkFrames.append(encryptedData)
+                frame +=1
+
+            decryptedData = rsa.decryptArray(privateKey, 64, chunkFrames)
+
+            chunk.lengthArray = decryptedData[0:4]
+            chunk.dataArray = decryptedData[4::]
+        
+        file.write(chunk.getChunkAsList())
         chunkIterator += 1
