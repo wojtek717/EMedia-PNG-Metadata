@@ -13,7 +13,8 @@ def hardKeys():
     return rsa.Keys_Collection(publicKey, privateKey)
 
 def menu():
-    keys = hardKeys()
+    #keys = hardKeys() KEEP FOR DEBUG PURPOSE
+    keys = rsa.Keys_Collection
     fileinput_FLAG = False
 
     #attempt to read an image until successfull or user quits
@@ -98,11 +99,18 @@ def menu():
 
         elif(menu_choice == 6):
             print("Encrypting...")
-            chunkCrypter.encrypt_chunks(fileChunks, keys.publicKey)
+            try:
+                chunkCrypter.encrypt_chunks(fileChunks, keys.publicKey)
+            except:
+                print("LOAD RSA KEYS!")
+
 
         elif(menu_choice == 7):
             print("Decrypting...")
-            chunkCrypter.decrypt_chunks(fileChunks, keys.privateKey)
+            try:
+                chunkCrypter.decrypt_chunks(fileChunks, keys.privateKey)
+            except:
+                print("LOAD RSA KEYS!")
 
         elif(menu_choice == 8):
             print("Generating new RSA keys...")
@@ -112,7 +120,19 @@ def menu():
 
         elif(menu_choice == 9):
             print("Loading RSA keys...")
-            publicKeyFile = input("")
+            publicKeyFileName = input("Public Key file: \n")
+            privateKeyFileName = input("Private Key file: \n")
+
+            try:
+                publicKeyFile = open(publicKeyFileName, "r")
+                privateKeyFile = open(privateKeyFileName, "r")
+            except:
+                print("CAN NOT OPEN FILE")
+            else:
+                publicKey = rsa.Public_Key(int(publicKeyFile.readline()), int(publicKeyFile.readline()))
+                privateKey = rsa.Private_Key(int(privateKeyFile.readline()), int(privateKeyFile.readline()))
+                keys = rsa.Keys_Collection(publicKey, privateKey)
+
 
         #MENU EXCEPTION
         else:
