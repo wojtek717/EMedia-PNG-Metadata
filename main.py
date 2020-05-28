@@ -52,6 +52,10 @@ def menu():
         print("3. Anonymize image.")
         print("4. Show image.")
         print("5. Quit.")
+        print("6. Encode image.")
+        print("7. Decode image.")
+        print("8. Generate new RSA keys.")
+        print("9. Load RSA keys.")
         try:
             menu_choice = int(input("Choose option: "))
         except:
@@ -93,10 +97,22 @@ def menu():
             return 0
 
         elif(menu_choice == 6):
+            print("Encrypting...")
             chunkCrypter.encrypt_chunks(fileChunks, keys.publicKey)
 
         elif(menu_choice == 7):
+            print("Decrypting...")
             chunkCrypter.decrypt_chunks(fileChunks, keys.privateKey)
+
+        elif(menu_choice == 8):
+            print("Generating new RSA keys...")
+            generatedKeys = rsa.generate_keys(512)
+            generatedKeys.savePublicKeyToFile("publicKey.txt")
+            generatedKeys.savePrivateKeyToFile("privateKey.txt")
+
+        elif(menu_choice == 9):
+            print("Loading RSA keys...")
+            publicKeyFile = input("")
 
         #MENU EXCEPTION
         else:

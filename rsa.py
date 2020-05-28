@@ -10,6 +10,18 @@ class Keys_Collection:
         self.publicKey = publicKey
         self.privateKey = privateKey
 
+    def savePublicKeyToFile(self, fileName):
+        file = open(fileName, "w")
+        file.write(str(self.publicKey.n))
+        file.write("\n")
+        file.write(str(self.publicKey.e))
+
+    def savePrivateKeyToFile(self, fileName):
+        file = open(fileName, "w")
+        file.write(str(self.privateKey.n))
+        file.write("\n")
+        file.write(str(self.privateKey.d))
+
 class Public_Key:
     def __init__(self, n, e):
         self.n = n
