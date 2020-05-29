@@ -129,7 +129,6 @@ def encryptArray(publicKey, frameLength, data):
             i += 1
 
         frameData = int("".join(map(str, frameDataArray))) 
-        print(frameData)
         stackedData.append(frameData)
         
         f += 1
@@ -158,20 +157,14 @@ def decryptArray(privateKey, frameLength, data):
                 unStackedData.append(realNumb)
             f += 1
     return unStackedData
-    
-    print("UNSTACKED")
-    print(unStackedData)
 
 def encrypt(publicKey, data):
     encryptedData = []
-
-    print("Enkryptuje sobie")
 
     for m in data:
         c = pow(m, publicKey.e, publicKey.n)
         encryptedData.append(c)
 
-    print(encryptedData)
     return encryptedData
 
 def decrypt(privateKey, data):
@@ -181,15 +174,4 @@ def decrypt(privateKey, data):
         m = pow(c, privateKey.d, privateKey.n)
         decryptedData.append(m)
 
-    #print(decryptedData)
     return decryptedData
-
-# print("Szyfruje: ")
-# data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-# print(data)
-# keys = generate_keys(512)
-# print(keys.publicKey.printKey())
-# print(keys.privateKey.printKey())
-
-# eData = encryptArray(keys.publicKey, 7, data)
-# decryptArray(keys.privateKey, 7, eData)
